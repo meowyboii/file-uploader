@@ -1,11 +1,18 @@
 const { body, validationResult } = require("express-validator");
 const { PrismaClient } = require("@prisma/client");
+const passport = require("../config/passport");
 const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
 
-const getSignUp = async (req, res, next) => {
+const getSignUp = (req, res, next) => {
   res.status(200).render("sign-up", { errors: null });
+};
+
+const getLogin = (req, res, next) => {
+  const errors = req.session.messages;
+  req.session.messages = [];
+  res.status(200).render("log-in", { errors: errors });
 };
 
 const validateUser = [
@@ -58,4 +65,26 @@ const createUser = async (req, res, next) => {
   }
 };
 
-module.exports = { getSignUp, createUser, validateUser };
+const login = (req, res, next) => {
+  passport.authenticate("local", {
+    successRedirect: "/",
+    failureRedirect: "/log-in",
+    failureMessage: true,
+  })(req, res, next); // Call the passport middleware
+};
+
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/log-in", { errors: null });
+};
+
+module.exports = {
+  getSignUp,
+  getLogin,
+  createUser,
+  validateUser,
+  login,
+  isAuthenticated,
+};

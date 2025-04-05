@@ -2,6 +2,10 @@
 @theme {
   --color-primary: #7c5dfa;
   --color-secondary: #9277ff;
+  --color-dark: #2d2a3e;
+}
+body {
+  @apply bg-dark text-white flex justify-center items-center min-h-screen p-4;
 }
 .btn-primary {
   @apply w-full p-4 mb-4 rounded-md bg-primary text-white font-medium cursor-pointer hover:bg-secondary transition-colors;
