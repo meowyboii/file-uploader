@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@theme {
+  --color-primary: #7c5dfa;
+  --color-secondary: #9277ff;
+}
+.btn-primary {
+  @apply w-full p-4 mb-4 rounded-md bg-primary text-white font-medium cursor-pointer hover:bg-secondary transition-colors;
+}
+.input {
+  @apply w-full p-4 rounded-md bg-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500;
+}

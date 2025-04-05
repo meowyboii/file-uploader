@@ -4,7 +4,10 @@
   "description": "A personal cloud storage service",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "npx @tailwindcss/cli -i ./input.css -o ./public/styles.css --watch",
+    "prisma:migrate": "npx prisma migrate dev --name add-session-table",
+    "dev": "concurrently \"nodemon app.js\" \"npm run build:css\""
   },
   "repository": {
     "type": "git",
@@ -18,17 +21,20 @@
   "homepage": "https://github.com/meowyboii/file-uploader#readme",
   "dependencies": {
     "@prisma/client": "^6.5.0",
+    "@quixo3/prisma-session-store": "^3.1.13",
     "@tailwindcss/cli": "^4.0.15",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
+    "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "tailwindcss": "^4.0.15"
   },
   "devDependencies": {
+    "concurrently": "^9.1.2",
     "prisma": "^6.5.0"
   }
 }
