@@ -1,8 +1,11 @@
 const path = require("node:path");
 const express = require("express");
 const authRouter = require("./routes/authRouter");
+const uploadRouter = require("./routes/uploadRouter");
 const session = require("./config/session");
 const passport = require("./config/passport");
+
+require("dotenv").config();
 
 const app = express();
 
@@ -17,6 +20,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(authRouter);
+app.use(uploadRouter);
 
 const PORT = 3000;
 app.listen(PORT, () => {
