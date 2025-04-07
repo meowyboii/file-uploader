@@ -2,6 +2,7 @@ const path = require("node:path");
 const express = require("express");
 const authRouter = require("./routes/authRouter");
 const uploadRouter = require("./routes/uploadRouter");
+const folderRouter = require("./routes/folderRouter");
 const session = require("./config/session");
 const passport = require("./config/passport");
 
@@ -20,6 +21,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(authRouter);
+app.use(folderRouter);
 app.use(uploadRouter);
 
 const PORT = 3000;

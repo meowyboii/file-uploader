@@ -1,7 +1,15 @@
 const { createClient } = require("@supabase/supabase-js");
+const { getFolderByName } = require("./folderController");
 
-const getUpload = (req, res, next) => {
-  res.status(200).render("upload", { errors: null });
+const getUpload = async (req, res, next) => {
+  const userId = req.user.id;
+  const folderName = req.params.folderName;
+  const folder = await getFolderByName(userId, folderName);
+  if (!folder) {
+    return res.status(404).json({ message: "Folder not found." });
+  }
+  // Render the upload page with the root folder passed as a context
+  res.status(200).render("upload", { folder });
 };
 
 const uploadFile = async (req, res, next) => {
@@ -13,10 +21,10 @@ const uploadFile = async (req, res, next) => {
       process.env.PROJECT_URL,
       process.env.SUPABASE_API_KEY
     );
-
+    const username = req.user.username;
     const { data, error } = await supabase.storage
       .from("uploads")
-      .upload(`server/${file.originalname}`, file.buffer, {
+      .upload(`${username}/${file.originalname}`, file.buffer, {
         contentType: file.mimetype,
       });
     if (error) {

@@ -2,6 +2,7 @@ const { body, validationResult } = require("express-validator");
 const { PrismaClient } = require("@prisma/client");
 const passport = require("../config/passport");
 const bcrypt = require("bcryptjs");
+const { createRootFolder } = require("./folderController");
 
 const prisma = new PrismaClient();
 
@@ -58,7 +59,18 @@ const createUser = async (req, res, next) => {
         password: hashedPassword,
       },
     });
-    res.status(201).json({ message: "User created", userId: newUser.id });
+    if (newUser) {
+      const rootFolder = await createRootFolder(newUser.username, newUser.id);
+      if (rootFolder) {
+        req.login(newUser, (err) => {
+          if (err) {
+            return next(err); // If there's an error logging in the user
+          }
+          // After login, redirect to the user's root folder
+          return res.redirect(`/${rootFolder.name}/upload`);
+        });
+      }
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong" });
@@ -66,18 +78,39 @@ const createUser = async (req, res, next) => {
 };
 
 const login = (req, res, next) => {
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/log-in",
-    failureMessage: true,
-  })(req, res, next); // Call the passport middleware
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      // Authentication failed
+      return res.redirect("/log-in"); // Or render an error message
+    }
+
+    // Authentication successful, log the user in
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect(`/${user.username}/upload`);
+    });
+  })(req, res, next);
 };
 
 const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.redirect("/log-in", { errors: null });
+  res.redirect("/log-in");
+};
+
+const logout = (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/log-in");
+  });
 };
 
 module.exports = {
@@ -86,5 +119,6 @@ module.exports = {
   createUser,
   validateUser,
   login,
+  logout,
   isAuthenticated,
 };

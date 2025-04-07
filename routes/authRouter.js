@@ -5,6 +5,7 @@ const {
   validateUser,
   getLogin,
   login,
+  logout,
 } = require("../controllers/authController");
 const router = express.Router();
 
@@ -13,5 +14,6 @@ router.post("/sign-up", validateUser, createUser);
 
 router.get("/log-in", getLogin);
 router.post("/log-in", login);
+router.get("/log-out", logout);
 
 module.exports = router;
