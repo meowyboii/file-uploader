@@ -59,9 +59,9 @@
           Don't have an account?
           <a href="/sign-up" class="text-white">Sign Up</a>
         </p>
-        <% if(errors && errors.length > 0){%>
+        <% if(failureMessage){%>
         <section class="md:w-2xl">
-          <p class="text-red-500"><%= errors[0] %></p>
+          <p class="text-red-500"><%= failureMessage %></p>
         </section>
         <%} %>
       </form>

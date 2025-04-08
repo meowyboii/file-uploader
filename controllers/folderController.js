@@ -13,7 +13,9 @@ const createFolder = async (req, res, next) => {
         parentFolderId: parseInt(parentFolderId),
       },
     });
-    return res.redirect(`/${newFolder.name}/upload`);
+    if (newFolder) {
+      return res.redirect(`/upload/${parentFolderId}`);
+    }
   } catch (error) {
     console.error("Error creating folder:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -40,12 +42,41 @@ const createRootFolder = async (name, userId) => {
   }
 };
 
-const getFolderByName = async (userId, folderName) => {
+const getRootFolder = async (userId) => {
   try {
     const folder = await prisma.folder.findFirst({
       where: {
         userId: userId,
-        name: folderName,
+        parentFolderId: null,
+      },
+      include: {
+        subfolders: true,
+        files: true,
+      },
+    });
+    if (folder) {
+      console.log("Folder found:", folder);
+      return folder;
+    } else {
+      console.log("Folder not found.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching root folder:", error);
+    throw error;
+  }
+};
+
+const getFolderById = async (userId, folderId) => {
+  try {
+    const folder = await prisma.folder.findFirst({
+      where: {
+        userId: userId,
+        id: folderId,
+      },
+      include: {
+        subfolders: true,
+        files: true,
       },
     });
 
@@ -53,7 +84,7 @@ const getFolderByName = async (userId, folderName) => {
       console.log("Folder found:", folder);
       return folder;
     } else {
-      console.log("Folder not found." + folderName + userId);
+      console.log("Folder not found.");
       return null;
     }
   } catch (error) {
@@ -62,4 +93,9 @@ const getFolderByName = async (userId, folderName) => {
   }
 };
 
-module.exports = { createFolder, createRootFolder, getFolderByName };
+module.exports = {
+  createFolder,
+  createRootFolder,
+  getRootFolder,
+  getFolderById,
+};

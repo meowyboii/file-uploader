@@ -1,6 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const { getUpload, uploadFile } = require("../controllers/uploadController");
+const { getUpload, createFile } = require("../controllers/uploadController");
 const { isAuthenticated } = require("../controllers/authController");
 
 const router = express.Router();
@@ -9,6 +9,6 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-router.get("/:folderName/upload", isAuthenticated, getUpload);
-router.post("/upload", isAuthenticated, upload.single("file"), uploadFile);
+router.get("/upload/:folderId", isAuthenticated, getUpload);
+router.post("/upload", isAuthenticated, upload.single("file"), createFile);
 module.exports = router;

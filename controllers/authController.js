@@ -2,7 +2,7 @@ const { body, validationResult } = require("express-validator");
 const { PrismaClient } = require("@prisma/client");
 const passport = require("../config/passport");
 const bcrypt = require("bcryptjs");
-const { createRootFolder } = require("./folderController");
+const { createRootFolder, getRootFolder } = require("./folderController");
 
 const prisma = new PrismaClient();
 
@@ -11,9 +11,7 @@ const getSignUp = (req, res, next) => {
 };
 
 const getLogin = (req, res, next) => {
-  const errors = req.session.messages;
-  req.session.messages = [];
-  res.status(200).render("log-in", { errors: errors });
+  res.status(200).render("log-in", { failureMessage: null });
 };
 
 const validateUser = [
@@ -67,7 +65,7 @@ const createUser = async (req, res, next) => {
             return next(err); // If there's an error logging in the user
           }
           // After login, redirect to the user's root folder
-          return res.redirect(`/${rootFolder.name}/upload`);
+          return res.redirect(`/upload/${rootFolder.id}`);
         });
       }
     }
@@ -79,20 +77,25 @@ const createUser = async (req, res, next) => {
 
 const login = (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
-    if (err) {
-      return next(err);
-    }
+    if (err) return next(err);
     if (!user) {
-      // Authentication failed
-      return res.redirect("/log-in"); // Or render an error message
+      return res.render("login", {
+        failureMessage: info?.message || "Invalid login credentials",
+      });
     }
 
-    // Authentication successful, log the user in
     req.logIn(user, (err) => {
-      if (err) {
-        return next(err);
-      }
-      return res.redirect(`/${user.username}/upload`);
+      if (err) return next(err);
+
+      (async () => {
+        try {
+          // Redirect user to the root folder
+          const rootFolder = await getRootFolder(user.id);
+          return res.redirect(`/upload/${rootFolder.id}`);
+        } catch (error) {
+          return next(error);
+        }
+      })();
     });
   })(req, res, next);
 };
