@@ -16,6 +16,9 @@ const getUpload = async (req, res, next) => {
 };
 
 const uploadFile = async (file, username) => {
+  const timestamp = Date.now();
+  // Append timestamp to file name to avoid duplicate file names
+  const fileName = `${timestamp}-${file.originalname}`;
   try {
     // Create Supabase client
     const supabase = createClient(
@@ -24,7 +27,7 @@ const uploadFile = async (file, username) => {
     );
     const { data, error } = await supabase.storage
       .from("uploads")
-      .upload(`${username}/${file.originalname}`, file.buffer, {
+      .upload(`${username}/${fileName}`, file.buffer, {
         contentType: file.mimetype,
       });
     if (error) {
@@ -34,7 +37,7 @@ const uploadFile = async (file, username) => {
       // Get public URL
       const { data: publicData } = supabase.storage
         .from("uploads")
-        .getPublicUrl(`${username}/${file.originalname}`);
+        .getPublicUrl(`${username}/${fileName}`);
 
       console.log(publicData.publicUrl);
       return publicData.publicUrl;
