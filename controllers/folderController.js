@@ -78,25 +78,15 @@ const renameFolder = async (req, res, next) => {
   }
 };
 
-const getRootFolder = async (userId) => {
+const getRootFolderId = async (userId) => {
   try {
     const folder = await prisma.folder.findFirst({
       where: {
         userId: userId,
         parentFolderId: null,
       },
-      include: {
-        subfolders: true,
-        files: true,
-      },
     });
-    if (folder) {
-      console.log("Folder found:", folder.name);
-      return folder;
-    } else {
-      console.log("Folder not found.");
-      return null;
-    }
+    return folder.id;
   } catch (error) {
     console.error("Error fetching root folder:", error);
     throw error;
@@ -132,7 +122,7 @@ const getFolderById = async (userId, folderId) => {
 module.exports = {
   createFolder,
   createRootFolder,
-  getRootFolder,
+  getRootFolderId,
   getFolderById,
   deleteFolder,
   renameFolder,

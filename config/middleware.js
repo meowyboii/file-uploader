@@ -10,4 +10,11 @@ const setCurrentUser = (req, res, next) => {
   next();
 };
 
-module.exports = { isAuthenticated, setCurrentUser };
+const setRootFolderId = (req, res, next) => {
+  if (req.session.rootFolderId) {
+    res.locals.rootFolderId = req.session.rootFolderId;
+  }
+  next();
+};
+
+module.exports = { isAuthenticated, setCurrentUser, setRootFolderId };

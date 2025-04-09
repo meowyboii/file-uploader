@@ -8,7 +8,7 @@ const session = expressSession({
   },
   secret: "a santa at nasa",
   resave: true,
-  saveUninitialized: true,
+  saveUninitialized: false,
   store: new PrismaSessionStore(new PrismaClient(), {
     checkPeriod: 2 * 60 * 1000, //ms
     dbRecordIdIsSessionId: true,

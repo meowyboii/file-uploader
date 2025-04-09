@@ -2,7 +2,7 @@ const { body, validationResult } = require("express-validator");
 const { PrismaClient } = require("@prisma/client");
 const passport = require("../config/passport");
 const bcrypt = require("bcryptjs");
-const { createRootFolder, getRootFolder } = require("./folderController");
+const { createRootFolder, getRootFolderId } = require("./folderController");
 
 const prisma = new PrismaClient();
 
@@ -90,8 +90,9 @@ const login = (req, res, next) => {
       (async () => {
         try {
           // Redirect user to the root folder
-          const rootFolder = await getRootFolder(user.id);
-          return res.redirect(`/upload/${rootFolder.id}`);
+          const rootFolderId = await getRootFolderId(user.id);
+          req.session.rootFolderId = rootFolderId;
+          return res.redirect(`/upload/${rootFolderId}`);
         } catch (error) {
           return next(error);
         }
@@ -105,7 +106,24 @@ const logout = (req, res, next) => {
     if (err) {
       return next(err);
     }
-    res.redirect("/log-in");
+
+    // Destroy session data
+    req.session.destroy((err) => {
+      if (err) {
+        return next(err);
+      }
+
+      // Clear the session cookie
+      res.clearCookie("connect.sid", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict", // Prevents cross-site requests
+        path: "/",
+      });
+
+      // Redirect to the login page
+      res.redirect("/log-in");
+    });
   });
 };
 

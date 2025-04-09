@@ -5,7 +5,7 @@ const uploadRouter = require("./routes/uploadRouter");
 const folderRouter = require("./routes/folderRouter");
 const session = require("./config/session");
 const passport = require("./config/passport");
-const { setCurrentUser } = require("./config/middleware");
+const { setCurrentUser, setRootFolderId } = require("./config/middleware");
 
 require("dotenv").config();
 
@@ -25,6 +25,9 @@ app.use(passport.session());
 
 //Current user middleware
 app.use(setCurrentUser);
+
+//Root folder id middleware
+app.use(setRootFolderId);
 
 app.use(authRouter);
 app.use(folderRouter);
