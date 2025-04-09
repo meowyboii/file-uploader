@@ -1,18 +1,8 @@
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient();
-
-const setRootFolderId = async (req, res, next) => {
-  try {
-    const rootFolder = await prisma.folder.findFirst({
-      where: { parentFolderId: null },
-    });
-    res.locals.rootFolderId = rootFolder ? rootFolder.id : null;
-    next();
-  } catch (error) {
-    console.error("Error fetching root folder:", error);
-    next();
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
   }
+  res.redirect("/log-in");
 };
 
 const setCurrentUser = (req, res, next) => {
@@ -20,4 +10,4 @@ const setCurrentUser = (req, res, next) => {
   next();
 };
 
-module.exports = { setCurrentUser, setRootFolderId };
+module.exports = { isAuthenticated, setCurrentUser };

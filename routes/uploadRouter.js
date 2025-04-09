@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const { getUpload, createFile } = require("../controllers/uploadController");
-const { isAuthenticated } = require("../controllers/authController");
+const { isAuthenticated } = require("../config/middleware");
 
 const router = express.Router();
 

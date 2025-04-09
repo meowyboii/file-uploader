@@ -1,5 +1,5 @@
 const express = require("express");
-const { isAuthenticated } = require("../controllers/authController");
+const { isAuthenticated } = require("../config/middleware");
 const {
   createFolder,
   deleteFolder,

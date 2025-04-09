@@ -100,13 +100,6 @@ const login = (req, res, next) => {
   })(req, res, next);
 };
 
-const isAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/log-in");
-};
-
 const logout = (req, res, next) => {
   req.logout((err) => {
     if (err) {
@@ -123,5 +116,4 @@ module.exports = {
   validateUser,
   login,
   logout,
-  isAuthenticated,
 };
