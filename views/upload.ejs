@@ -140,6 +140,27 @@
           .reverse()
           .join("-");
       };
+
+      const deleteFolder = async (folderId) => {
+        try {
+          const response = await fetch(`/folder/${folderId}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log(data.message);
+            // Redirect user to the parent folder of the deleted folder
+            window.location.href = `/upload/${data.parentFolderId}`;
+          } else {
+            const err = await response.json();
+            console.log(err.error || "Failed to delete");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Something went wrong");
+        }
+      };
     </script>
   </body>
 </html>

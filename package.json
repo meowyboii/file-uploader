@@ -6,7 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:css": "npx @tailwindcss/cli -i ./input.css -o ./public/styles.css --watch",
-    "prisma:migrate": "npx prisma migrate dev --name add-session-table",
     "dev": "concurrently \"nodemon app.js\" \"npm run build:css\""
   },
   "repository": {

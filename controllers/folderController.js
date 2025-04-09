@@ -14,7 +14,7 @@ const createFolder = async (req, res, next) => {
       },
     });
     if (newFolder) {
-      return res.redirect(`/upload/${parentFolderId}`);
+      return res.status(201).redirect(`/upload/${parentFolderId}`);
     }
   } catch (error) {
     console.error("Error creating folder:", error);
@@ -42,6 +42,42 @@ const createRootFolder = async (name, userId) => {
   }
 };
 
+const deleteFolder = async (req, res, next) => {
+  const folderId = parseInt(req.params.folderId);
+
+  try {
+    const deletedFolder = await prisma.folder.delete({
+      where: { id: folderId },
+    });
+
+    res.status(200).json({
+      message: "Folder deleted",
+      parentFolderId: deletedFolder.parentFolderId,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete folder" });
+  }
+};
+
+const renameFolder = async (req, res, next) => {
+  const folderId = parseInt(req.params.folderId);
+  const name = req.body.folderName;
+
+  try {
+    const updatedFolder = await prisma.folder.update({
+      where: { id: folderId },
+      data: {
+        name,
+      },
+    });
+    res.status(200).redirect(`/upload/${updatedFolder.id}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete folder" });
+  }
+};
+
 const getRootFolder = async (userId) => {
   try {
     const folder = await prisma.folder.findFirst({
@@ -55,7 +91,7 @@ const getRootFolder = async (userId) => {
       },
     });
     if (folder) {
-      console.log("Folder found:", folder);
+      console.log("Folder found:", folder.name);
       return folder;
     } else {
       console.log("Folder not found.");
@@ -81,7 +117,7 @@ const getFolderById = async (userId, folderId) => {
     });
 
     if (folder) {
-      console.log("Folder found:", folder);
+      console.log("Folder found:", folder.name);
       return folder;
     } else {
       console.log("Folder not found.");
@@ -98,4 +134,6 @@ module.exports = {
   createRootFolder,
   getRootFolder,
   getFolderById,
+  deleteFolder,
+  renameFolder,
 };

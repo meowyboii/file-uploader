@@ -29,7 +29,7 @@ model File {
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
-  folder    Folder?  @relation(fields: [folderId], references: [id])
+  folder    Folder?  @relation(fields: [folderId], references: [id], onDelete: Cascade)
   folderId  Int?
 }
 
@@ -41,7 +41,7 @@ model Folder {
   user           User     @relation(fields: [userId], references: [id])
   userId         Int
   files          File[]
-  parentFolder   Folder?  @relation("FolderHierarchy", fields: [parentFolderId], references: [id])
+  parentFolder   Folder?  @relation("FolderHierarchy", fields: [parentFolderId], references: [id], onDelete: Cascade)
   parentFolderId Int?
   subfolders     Folder[] @relation("FolderHierarchy")
 }

@@ -5,7 +5,7 @@
   --color-dark: #2d2a3e;
 }
 body {
-  @apply bg-dark text-white;
+  @apply bg-dark text-white min-h-screen;
 }
 .btn-primary {
   @apply w-full p-4 mb-4 rounded-md bg-primary text-white font-medium cursor-pointer hover:bg-secondary transition-colors;
