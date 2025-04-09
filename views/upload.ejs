@@ -16,66 +16,105 @@
   </head>
   <body>
     <div class="flex flex-col items-center gap-4 p-7">
-      <%- include('partials/actions') %> 
-      <% if (folder.subfolders.length > 0 || folder.files.length > 0) { %>
-        <!-- Subfolders and Files Display -->
-        <div class="w-full max-w-4xl mt-10">
-          <!-- Render Folders and Files -->
-          <div class="mb-8">
-            <div class="flex flex-wrap gap-4">
-              <% folder.subfolders.forEach(subfolder => { %>
-                <div class=" p-4 w-40 text-center ">
-                  <button onclick="location.href='/upload/<%=subfolder.id%>'" class="cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-30 text-primary">
-                    <path d="M19.906 9c.382 0 .749.057 1.094.162V9a3 3 0 0 0-3-3h-3.879a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H6a3 3 0 0 0-3 3v3.162A3.756 3.756 0 0 1 4.094 9h15.812ZM4.094 10.5a2.25 2.25 0 0 0-2.227 2.568l.857 6A2.25 2.25 0 0 0 4.951 21H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-2.227-2.568H4.094Z" />
-                  </svg>
-                  
-                  <h4 class="text-sm mb-2 line-clamp-4 break-all"><%= subfolder.name %></h4>
-                  
-                  </button>
-                </div>
-              <% }) %>
-              <% folder.files.forEach(file => { %>
-                <div class=" p-4 pt-8 w-40 text-center  ">
-                  <button class="cursor-pointer">
-                    <ion-icon name="document" class="text-8xl text-primary"></ion-icon>
-                  
-                  <h4 class="text-sm mb-2 line-clamp-4 break-all"><%= file.name %></h4>
-                  
-                  </button>
-                </div>
-              <% }) %>
+      <%- include('partials/actions') %> <% if (folder.subfolders.length > 0 ||
+      folder.files.length > 0) { %>
+      <!-- Subfolders and Files Display -->
+      <div class="w-full max-w-4xl mt-10">
+        <!-- Render Folders and Files -->
+        <div class="mb-8">
+          <div class="flex flex-wrap gap-4">
+            <% folder.subfolders.forEach(subfolder => { %>
+            <div
+              class="p-4 w-40 text-center focus-within:bg-secondary/10 transition-all"
+              onclick="showDetails('<%= subfolder.name %>', 'N/A', '<%= subfolder.createdAt %>')"
+            >
+              <button ondblclick="location.href='/upload/<%=subfolder.id%>'">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="size-30 text-primary"
+                >
+                  <path
+                    d="M19.906 9c.382 0 .749.057 1.094.162V9a3 3 0 0 0-3-3h-3.879a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H6a3 3 0 0 0-3 3v3.162A3.756 3.756 0 0 1 4.094 9h15.812ZM4.094 10.5a2.25 2.25 0 0 0-2.227 2.568l.857 6A2.25 2.25 0 0 0 4.951 21H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-2.227-2.568H4.094Z"
+                  />
+                </svg>
+
+                <h4 class="text-sm mb-2 line-clamp-4 break-all">
+                  <%= subfolder.name %>
+                </h4>
+              </button>
             </div>
+            <% }) %> <% folder.files.forEach(file => { %>
+            <div
+              class="p-4 pt-8 w-40 text-center focus-within:bg-secondary/10 transition-all"
+              onclick="showDetails('<%= file.name %>', '<%= (file.size/1000000).toPrecision(2) %> MB', '<%= file.createdAt %>')"
+            >
+              <button ondblclick="window.open(`<%= file.path %>`);">
+                <ion-icon
+                  name="document"
+                  class="text-8xl text-primary"
+                ></ion-icon>
+
+                <h4 class="text-sm mb-2 line-clamp-4 break-all">
+                  <%= file.name %>
+                </h4>
+              </button>
+            </div>
+            <% }) %>
           </div>
-      <% } %>
-        <!-- File Upload Section -->
-        <div
-          class="border border-dashed border-gray-400 rounded-lg p-10 w-full max-w-md flex flex-col items-center justify-center cursor-pointer mt-15"
-          onclick="document.getElementById('fileInput').click()"
-          <% if (folder.subfolders.length > 0 || folder.files.length > 0) { %> hidden <% } %>
-        >
-          <i class="fas fa-cloud-upload-alt text-primary mb-4 text-7xl"></i>
-          <p class="text-primary mb-4">Click to upload a file</p>
-          <form
-            action="/upload"
-            method="post"
-            enctype="multipart/form-data"
-            class="w-full"
-            id="uploadForm"
-          >
-            <input type="file" id="fileInput" class="hidden" name="file" />
-            <input hidden name="folderId" value="<%= folder.id %>" />
-            <p class="text-gray-400 text-xs text-center">(up to 10MB)</p>
-          </form>
-          <p class="text-gray-400 text-xs mt-8">
-            PNG, JPEG, PDF, MP4, AVI, TXT are supported
-          </p>
         </div>
-      
+      </div>
+      <% } %>
+      <!-- File Upload Section -->
+      <div
+        class="border border-dashed border-gray-400 rounded-lg p-10 w-full max-w-md flex flex-col items-center justify-center cursor-pointer mt-15"
+        onclick="document.getElementById('fileInput').click()"
+        <%
+        if
+        (folder.subfolders.length
+      >
+        0 || folder.files.length > 0) { %> hidden <% } %> >
+        <i class="fas fa-cloud-upload-alt text-primary mb-4 text-7xl"></i>
+        <p class="text-primary mb-4">Click to upload a file</p>
+        <form
+          action="/upload"
+          method="post"
+          enctype="multipart/form-data"
+          class="w-full"
+          id="uploadForm"
+        >
+          <input type="file" id="fileInput" class="hidden" name="file" />
+          <input hidden name="folderId" value="<%= folder.id %>" />
+          <p class="text-gray-400 text-xs text-center">(up to 10MB)</p>
+        </form>
+        <p class="text-gray-400 text-xs mt-8">
+          PNG, JPEG, PDF, MP4, AVI, TXT are supported
+        </p>
+      </div>
+    </div>
+
+    <!-- File/Folder Details -->
+    <div
+      class="flex gap-10 fixed bottom-0 left-0 w-full bg-black/10 text-white p-4 shadow-lg text-xs"
+    >
+      <span>Items: <%= folder.subfolders.length + folder.files.length %></span>
+      <div id="item-details" class="flex gap-10">
+        <span id="name-detail">Name: N/A</span>
+        <span id="size-detail">Size: N/A</span>
+        <span id="date-detail">Date Created: N/A</span>
+      </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
     <script>
       const fileInput = document.getElementById("fileInput");
       const form = document.getElementById("uploadForm");
@@ -85,6 +124,22 @@
           form.submit(); // Automatically submits the form
         }
       });
+
+      const showDetails = (name, size, date) => {
+        document.getElementById("name-detail").textContent = "Name: " + name;
+        document.getElementById("size-detail").textContent = "Size: " + size;
+        document.getElementById("date-detail").textContent =
+          "Date Created: " + formatDate(date);
+      };
+
+      const formatDate = (date) => {
+        const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+        return new Date(date)
+          .toLocaleDateString("en-GB", options)
+          .split("/")
+          .reverse()
+          .join("-");
+      };
     </script>
   </body>
 </html>
