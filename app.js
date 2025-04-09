@@ -22,6 +22,12 @@ app.use(session);
 app.use(passport.initialize());
 app.use(passport.session());
 
+//Current user middleware
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  next();
+});
+
 app.use(authRouter);
 app.use(folderRouter);
 app.use(uploadRouter);
