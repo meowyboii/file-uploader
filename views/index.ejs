@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/styles.css" rel="stylesheet" />
+    <title>Secure File Storage</title>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <!-- Hero Section -->
+    <main
+      class="container mx-auto px-6 py-8 md:py-20 flex gap-5 flex-col md:flex-row items-center"
+    >
+      <div class="md:w-1/2 flex justify-center">
+        <img src="/cloud_banner.png" alt="cloud upload image" width="600" />
+      </div>
+      <div class="md:w-1/2 mb-12 md:mb-0">
+        <h1 class="text-5xl lg:text-6xl font-bold leading-tight mb-6">
+          <span class="gradient-text">YOUR FILES,</span>
+          ALWAYS<br />
+          WITHIN REACH
+        </h1>
+
+        <p class="text-gray-300 mb-8 max-w-lg hidden md:block">
+          Keep your files safe and organized in one place. Upload in seconds and
+          access them anytime, from any device.
+        </p>
+        <a href="/upload/<%= rootFolderId||0 %>">
+          <button
+            class="bg-transparent border border-white px-6 py-3 rounded-md font-medium hover:bg-white hover:text-dark cursor-pointer transition"
+          >
+            Try for free
+          </button>
+        </a>
+      </div>
+    </main>
+  </body>
+</html>

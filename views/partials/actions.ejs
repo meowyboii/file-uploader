@@ -1,9 +1,9 @@
-<section class="flex flex-col md:flex-row container mx-auto p-4 items-center">
-  <div class="flex gap-10 w-2/3">
+<section class="flex flex-col md:flex-row container mx-auto items-center">
+  <div class="flex items-center gap-10 w-2/3">
     <button <% if (folder.parentFolderId) { %>
       onclick="location.href='/upload/<%=folder.parentFolderId%>'" <% } %>
       class="justify-center items-center cursor-pointer hover:bg-white/10
-      rounded-lg w-10 h-10 transition-colors hidden md:inline-flex" >
+      rounded-lg w-10 h-10 transition-colors hidden md:inline-flex " >
 
       <svg
         xmlns="http://www.w3.org/2000/svg"

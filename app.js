@@ -1,5 +1,6 @@
 const path = require("node:path");
 const express = require("express");
+const indexRouter = require("./routes/indexRouter");
 const authRouter = require("./routes/authRouter");
 const uploadRouter = require("./routes/uploadRouter");
 const folderRouter = require("./routes/folderRouter");
@@ -29,6 +30,7 @@ app.use(setCurrentUser);
 //Root folder id middleware
 app.use(setRootFolderId);
 
+app.use(indexRouter);
 app.use(authRouter);
 app.use(folderRouter);
 app.use(uploadRouter);

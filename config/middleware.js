@@ -11,9 +11,7 @@ const setCurrentUser = (req, res, next) => {
 };
 
 const setRootFolderId = (req, res, next) => {
-  if (req.session.rootFolderId) {
-    res.locals.rootFolderId = req.session.rootFolderId;
-  }
+  res.locals.rootFolderId = req.session.rootFolderId || null;
   next();
 };
 

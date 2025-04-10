@@ -79,7 +79,7 @@ const login = (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
     if (!user) {
-      return res.render("login", {
+      return res.render("log-in", {
         failureMessage: info?.message || "Invalid login credentials",
       });
     }
