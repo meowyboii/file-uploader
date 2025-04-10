@@ -5,16 +5,14 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const getUpload = async (req, res, next) => {
-  console.log("ROOT FOLDER ID: " + req.session.rootFolderId);
   const userId = req.user.id;
   const folderId = req.params.folderId;
-  const rootFolderId = req.session.rootFolderId;
   const folder = await getFolderById(userId, parseInt(folderId));
   if (!folder) {
     return res.status(404).json({ message: "Folder not found." });
   }
   // Render the upload page with the root folder passed as a context
-  res.status(200).render("upload", { folder, rootFolderId });
+  res.status(200).render("upload", { folder });
 };
 
 const uploadFile = async (file, username) => {
