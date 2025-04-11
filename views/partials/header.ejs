@@ -2,23 +2,17 @@
   <div class="container mx-auto flex justify-between items-center">
     <nav class="w-full">
       <ul class="flex space-x-10 items-center">
-        <li><a href="/" class="hover:underline">Home</a></li>
+        <li><a href="/" class="<%= currentPath === '/' ? 'text-white ' : 'text-white/60' %> hover:text-white transition-colors">Home</a></li>
         <li>
-          <% if (rootFolderId) { %>
-          <a href="/upload/<%= rootFolderId %>" class="hover:underline"
+          <a
+            href="/upload/<%= rootFolderId || 0%>"
+            class="<%= currentPath.startsWith('/upload') ? 'text-white ' : 'text-white/60' %> hover:text-white transition-colors"
             >Upload</a
           >
-          <% } else { %>
-          <a href="/log-in" class="hover:underline">Upload</a>
-          <% } %>
         </li>
 
         <li class="ml-auto">
-          <% if (currentUser) { %>
-          <a href="/log-out" class="hover:underline">Logout</a>
-          <% } else { %>
-          <a href="/log-in" class="hover:underline">Login</a>
-          <% } %>
+          <a href="<%= currentUser? "/log-out" : "/log-in" %>" class="<%= currentPath === '/log-in' || currentPath === '/log-out' ? 'text-white ' : 'text-white/60' %> hover:text-white transition-colors"><%= currentUser? "Logout" : "Login" %></a>
         </li>
       </ul>
     </nav>

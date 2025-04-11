@@ -696,8 +696,14 @@
   .px-6 {
     padding-inline: calc(var(--spacing) * 6);
   }
+  .px-10 {
+    padding-inline: calc(var(--spacing) * 10);
+  }
   .px-14 {
     padding-inline: calc(var(--spacing) * 14);
+  }
+  .px-20 {
+    padding-inline: calc(var(--spacing) * 20);
   }
   .py-2 {
     padding-block: calc(var(--spacing) * 2);
@@ -799,6 +805,9 @@
   }
   .text-white\/50 {
     color: color-mix(in oklab, var(--color-white) 50%, transparent);
+  }
+  .text-white\/60 {
+    color: color-mix(in oklab, var(--color-white) 60%, transparent);
   }
   .text-white\/70 {
     color: color-mix(in oklab, var(--color-white) 70%, transparent);

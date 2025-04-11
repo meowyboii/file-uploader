@@ -11,6 +11,7 @@ const {
   setRootFolderId,
   errorHandler,
   allRouteHandler,
+  setCurrentPath,
 } = require("./config/middleware");
 
 require("dotenv").config();
@@ -31,6 +32,9 @@ app.use(passport.session());
 
 //Current user middleware
 app.use(setCurrentUser);
+
+//Current path middleware
+app.use(setCurrentPath);
 
 //Root folder id middleware
 app.use(setRootFolderId);
