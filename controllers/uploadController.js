@@ -13,6 +13,7 @@ const getUpload = async (req, res, next) => {
     // Render the upload page with the root folder passed as a context
     res.status(200).render("upload", { folder });
   } catch (error) {
+    console.error("Cannot get upload page: ", error);
     return next(error);
   }
 };
@@ -68,7 +69,7 @@ const createFile = async (req, res, next) => {
     }
     return res.status(201).redirect(`/upload/${folderId}`);
   } catch (error) {
-    console.error("Error creating the new file");
+    console.error("Error creating the new file", error);
     return next(error);
   }
 };

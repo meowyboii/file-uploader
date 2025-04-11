@@ -19,7 +19,7 @@ const createFolder = async (req, res, next) => {
     }
     return res.status(201).redirect(`/upload/${parentFolderId}`);
   } catch (error) {
-    console.log("Error creating new folder");
+    console.error("Error creating new folder", error);
     return next(error);
   }
 };
@@ -61,7 +61,7 @@ const deleteFolder = async (req, res, next) => {
       parentFolderId: deletedFolder.parentFolderId,
     });
   } catch (error) {
-    console.log("Failed to delete folder");
+    console.error("Failed to delete folder", error);
     return next(error);
   }
 };
@@ -85,7 +85,7 @@ const renameFolder = async (req, res, next) => {
     });
     res.status(200).redirect(`/upload/${updatedFolder.id}`);
   } catch (error) {
-    console.log("Failed to rename folder");
+    console.error("Failed to rename folder", error);
     return next(error);
   }
 };

@@ -1,4 +1,4 @@
-const { NotFoundError } = require("./error");
+const { CustomError, NotFoundError } = require("./error");
 
 const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
@@ -17,9 +17,15 @@ const setRootFolderId = (req, res, next) => {
   next();
 };
 
+const setCurrentPath = (req, res, next) => {
+  res.locals.currentPath = req.path;
+  next();
+};
+
 const errorHandler = (err, req, res, next) => {
+  const isCustomError = err instanceof CustomError;
   res.status(err.statusCode || 500).render("error", {
-    message: err.message || "Internal server error",
+    message: isCustomError ? err.message : "Internal Server Error",
     statusCode: err.statusCode || 500,
   });
 };
@@ -32,6 +38,7 @@ module.exports = {
   isAuthenticated,
   setCurrentUser,
   setRootFolderId,
+  setCurrentPath,
   errorHandler,
   allRouteHandler,
 };
