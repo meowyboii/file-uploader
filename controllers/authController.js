@@ -37,18 +37,24 @@ const validateUser = [
 ];
 
 const createUser = async (req, res, next) => {
-  let errors = validationResult(req).array();
-  const { username, password } = req.body;
   try {
+    const errors = validationResult(req);
+    const errorArray = errors.array();
+
+    const { username, password } = req.body;
+
     const existingUser = await prisma.user.findUnique({
       where: { username },
     });
+
     if (existingUser) {
-      errors.push({ msg: "Username already taken" });
+      errorArray.push({ msg: "Username already taken" });
     }
-    if (errors.length > 0) {
-      return res.status(400).render("sign-up", { errors: errors });
+
+    if (errorArray.length > 0) {
+      return res.status(400).render("sign-up", { errors: errorArray });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await prisma.user.create({
@@ -57,21 +63,17 @@ const createUser = async (req, res, next) => {
         password: hashedPassword,
       },
     });
-    if (newUser) {
-      const rootFolder = await createRootFolder(newUser.username, newUser.id);
-      if (rootFolder) {
-        req.login(newUser, (err) => {
-          if (err) {
-            return next(err); // If there's an error logging in the user
-          }
-          // After login, redirect to the user's root folder
-          return res.redirect(`/upload/${rootFolder.id}`);
-        });
+
+    const rootFolder = await createRootFolder(newUser.username, newUser.id);
+
+    req.login(newUser, (err) => {
+      if (err) {
+        return next(new CustomError("Login failed", 500));
       }
-    }
+      return res.redirect(`/upload/${rootFolder.id}`);
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something went wrong" });
+    return next(error);
   }
 };
 

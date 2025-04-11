@@ -1,4 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
+const { NotFoundError, CustomError } = require("../config/error");
 
 const prisma = new PrismaClient();
 
@@ -13,39 +14,44 @@ const createFolder = async (req, res, next) => {
         parentFolderId: parseInt(parentFolderId),
       },
     });
-    if (newFolder) {
-      return res.status(201).redirect(`/upload/${parentFolderId}`);
+    if (!newFolder) {
+      throw new CustomError("Failed to create folder", 500);
     }
+    return res.status(201).redirect(`/upload/${parentFolderId}`);
   } catch (error) {
-    console.error("Error creating folder:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.log("Error creating new folder");
+    return next(error);
   }
 };
 
 const createRootFolder = async (name, userId) => {
-  try {
-    const newFolder = await prisma.folder.create({
-      data: {
-        name,
-        userId,
-        parentFolderId: null,
-      },
-    });
-    if (newFolder) {
-      return newFolder;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.error("Error creating root folder:", error);
-    throw error;
+  const newFolder = await prisma.folder.create({
+    data: {
+      name,
+      userId,
+      parentFolderId: null,
+    },
+  });
+
+  if (!newFolder) {
+    throw new CustomError("Failed to create root folder", 500);
   }
+
+  return newFolder;
 };
 
 const deleteFolder = async (req, res, next) => {
   const folderId = parseInt(req.params.folderId);
 
   try {
+    const folderToDelete = await prisma.folder.findUnique({
+      where: { id: folderId },
+    });
+
+    if (!folderToDelete) {
+      throw new NotFoundError("Folder not found");
+    }
+
     const deletedFolder = await prisma.folder.delete({
       where: { id: folderId },
     });
@@ -55,8 +61,8 @@ const deleteFolder = async (req, res, next) => {
       parentFolderId: deletedFolder.parentFolderId,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to delete folder" });
+    console.log("Failed to delete folder");
+    return next(error);
   }
 };
 
@@ -65,6 +71,12 @@ const renameFolder = async (req, res, next) => {
   const name = req.body.folderName;
 
   try {
+    const folder = await prisma.folder.findUnique({
+      where: { id: folderId },
+    });
+    if (!folder) {
+      throw new NotFoundError("Folder not found");
+    }
     const updatedFolder = await prisma.folder.update({
       where: { id: folderId },
       data: {
@@ -73,50 +85,40 @@ const renameFolder = async (req, res, next) => {
     });
     res.status(200).redirect(`/upload/${updatedFolder.id}`);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to delete folder" });
+    console.log("Failed to rename folder");
+    return next(error);
   }
 };
 
 const getRootFolderId = async (userId) => {
-  try {
-    const folder = await prisma.folder.findFirst({
-      where: {
-        userId: userId,
-        parentFolderId: null,
-      },
-    });
-    return folder.id;
-  } catch (error) {
-    console.error("Error fetching root folder:", error);
-    throw error;
+  const folder = await prisma.folder.findFirst({
+    where: {
+      userId,
+      parentFolderId: null,
+    },
+  });
+  if (!folder) {
+    throw new NotFoundError("Root folder not found");
   }
+  return folder.id;
 };
 
 const getFolderById = async (userId, folderId) => {
-  try {
-    const folder = await prisma.folder.findFirst({
-      where: {
-        userId: userId,
-        id: folderId,
-      },
-      include: {
-        subfolders: true,
-        files: true,
-      },
-    });
+  const folder = await prisma.folder.findFirst({
+    where: {
+      userId,
+      id: folderId,
+    },
+    include: {
+      subfolders: true,
+      files: true,
+    },
+  });
 
-    if (folder) {
-      console.log("Folder found:", folder.name);
-      return folder;
-    } else {
-      console.log("Folder not found.");
-      return null;
-    }
-  } catch (error) {
-    console.error("Error fetching folder:", error);
-    throw error;
+  if (!folder) {
+    throw new NotFoundError("Folder not found or you do not have access to it");
   }
+  return folder;
 };
 
 module.exports = {

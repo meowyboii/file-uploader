@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error <%= statusCode %></title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body
+    class="bg-radial-[at_50%_75%] from-dark via-secondary/5 to-primary/50 text-white"
+  >
+    <div class="flex justify-center items-center min-h-screen">
+      <div class="text-center">
+        <h1 class="text-5xl font-bold mb-4">Oops! Something went wrong.</h1>
+        <p class="text-lg mb-4">Error <%= statusCode %>: <%= message %></p>
+        <a href="/" class="text-primary">Back to Home</a>
+      </div>
+    </div>
+  </body>
+</html>

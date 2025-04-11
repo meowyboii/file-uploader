@@ -6,7 +6,12 @@ const uploadRouter = require("./routes/uploadRouter");
 const folderRouter = require("./routes/folderRouter");
 const session = require("./config/session");
 const passport = require("./config/passport");
-const { setCurrentUser, setRootFolderId } = require("./config/middleware");
+const {
+  setCurrentUser,
+  setRootFolderId,
+  errorHandler,
+  allRouteHandler,
+} = require("./config/middleware");
 
 require("dotenv").config();
 
@@ -34,6 +39,12 @@ app.use(indexRouter);
 app.use(authRouter);
 app.use(folderRouter);
 app.use(uploadRouter);
+
+//Catch-all route middleware
+app.use("*", allRouteHandler);
+
+// Error handling middleware
+app.use(errorHandler);
 
 const PORT = 3000;
 app.listen(PORT, () => {

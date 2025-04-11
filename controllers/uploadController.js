@@ -1,55 +1,53 @@
 const { createClient } = require("@supabase/supabase-js");
 const { getFolderById } = require("./folderController");
 const { PrismaClient } = require("@prisma/client");
+const { CustomError, BadRequestError } = require("../config/error");
 
 const prisma = new PrismaClient();
 
 const getUpload = async (req, res, next) => {
-  const userId = req.user.id;
-  const folderId = req.params.folderId;
-  const folder = await getFolderById(userId, parseInt(folderId));
-  if (!folder) {
-    return res.status(404).json({ message: "Folder not found." });
+  try {
+    const userId = req.user.id;
+    const folderId = req.params.folderId;
+    const folder = await getFolderById(userId, parseInt(folderId));
+    // Render the upload page with the root folder passed as a context
+    res.status(200).render("upload", { folder });
+  } catch (error) {
+    return next(error);
   }
-  // Render the upload page with the root folder passed as a context
-  res.status(200).render("upload", { folder });
 };
 
 const uploadFile = async (file, username) => {
   const timestamp = Date.now();
   // Append timestamp to file name to avoid duplicate file names
   const fileName = `${timestamp}-${file.originalname}`;
-  try {
-    // Create Supabase client
-    const supabase = createClient(
-      process.env.PROJECT_URL,
-      process.env.SUPABASE_API_KEY
-    );
-    const { data, error } = await supabase.storage
-      .from("uploads")
-      .upload(`${username}/${fileName}`, file.buffer, {
-        contentType: file.mimetype,
-      });
-    if (error) {
-      console.error(error);
-      return null;
-    } else {
-      // Get public URL
-      const { data: publicData } = supabase.storage
-        .from("uploads")
-        .getPublicUrl(`${username}/${fileName}`);
+  // Create Supabase client
+  const supabase = createClient(
+    process.env.PROJECT_URL,
+    process.env.SUPABASE_API_KEY
+  );
 
-      console.log(publicData.publicUrl);
-      return publicData.publicUrl;
-    }
-  } catch (error) {
-    console.log(error);
+  const { data, error } = await supabase.storage
+    .from("uploads")
+    .upload(`${username}/${fileName}`, file.buffer, {
+      contentType: file.mimetype,
+    });
+
+  if (error) {
+    throw new CustomError("Failed to upload file to cloud", 500);
   }
+  // Get public URL
+  const { data: publicData } = supabase.storage
+    .from("uploads")
+    .getPublicUrl(`${username}/${fileName}`);
+
+  return publicData.publicUrl;
 };
 
 const createFile = async (req, res, next) => {
   const file = req.file;
-  if (!file) return res.status(400).send("No file uploaded.");
+  if (!file) throw new BadRequestError("Failed to create new file");
+
   const username = req.user.username;
   const publicUrl = await uploadFile(file, username);
   const folderId = req.body.folderId;
@@ -65,13 +63,13 @@ const createFile = async (req, res, next) => {
         folderId: parseInt(folderId),
       },
     });
-    if (newFile) {
-      console.log(newFile);
-      return res.redirect(`/upload/${folderId}`);
+    if (!newFile) {
+      throw new CustomError("Failed to create new file", 500);
     }
+    return res.status(201).redirect(`/upload/${folderId}`);
   } catch (error) {
-    console.error("Error creating folder:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error creating the new file");
+    return next(error);
   }
 };
 

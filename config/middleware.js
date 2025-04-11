@@ -1,3 +1,5 @@
+const { NotFoundError } = require("./error");
+
 const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
@@ -15,4 +17,21 @@ const setRootFolderId = (req, res, next) => {
   next();
 };
 
-module.exports = { isAuthenticated, setCurrentUser, setRootFolderId };
+const errorHandler = (err, req, res, next) => {
+  res.status(err.statusCode || 500).render("error", {
+    message: err.message || "Internal server error",
+    statusCode: err.statusCode || 500,
+  });
+};
+
+const allRouteHandler = (req, res, next) => {
+  return next(new NotFoundError(`Cannot find ${req.originalUrl}`));
+};
+
+module.exports = {
+  isAuthenticated,
+  setCurrentUser,
+  setRootFolderId,
+  errorHandler,
+  allRouteHandler,
+};
