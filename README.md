@@ -2,6 +2,9 @@
 
 **A personal cloud storage service**
 
+![Image](https://github.com/user-attachments/assets/dce20ed5-bd90-46c9-b569-76d9c083264c)
+![Image](https://github.com/user-attachments/assets/01861f64-437e-49c5-ad72-5d6cb55f1f23)
+
 ## 🚀 Overview
 
 **File Uploader** is a personal cloud storage application that allows users to upload, manage, and access their files securely. Built with modern web technologies, it offers a user-friendly interface and robust backend support for seamless file handling.
